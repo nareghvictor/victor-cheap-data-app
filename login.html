@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor Cheap Data - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen p-4">
+
+  <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+    <!-- Logo -->
+    <div class="flex flex-col items-center mb-4">
+      <img src="https://i.ibb.co/39yrxJHk/file-000000001788624397c947d3af55d17b.png" class="w-12 h-12 rounded-full mb-2" alt="App Logo" />
+      <h1 class="text-xl font-bold text-blue-800">Victor Cheap Data</h1>
+    </div>
+
+    <div id="user-section" class="hidden">
+      <p class="text-gray-600">Welcome back</p>
+      <p class="text-sm mb-4">Enter your password to access your account</p>
+      <img id="user-photo" src="" alt="User Photo" class="w-20 h-20 rounded-full mx-auto mb-2" />
+      <h2 id="user-name" class="text-lg font-semibold"></h2>
+      <p id="user-username" class="text-sm text-gray-500 mb-4"></p>
+
+      <form id="login-form" class="space-y-3">
+        <input type="password" id="password" placeholder="Enter password" required class="w-full px-4 py-2 border border-gray-300 rounded" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+      </form>
+
+      <p class="my-3">
+        🔒 <button onclick="fingerprintLogin()" class="text-blue-600 hover:underline">Login with fingerprint</button>
+      </p>
+      <p class="text-sm text-gray-600">
+        ❌ <a href="#" onclick="logoutUser()" class="text-red-500 hover:underline">Not you? Switch account</a>
+      </p>
+    </div>
+
+    <!-- If no saved user -->
+    <div id="no-user" class="text-center hidden">
+      <p class="text-gray-700">No saved user found.<br><a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>.</p>
+    </div>
+  </div>
+
+  <script>
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    const userSection = document.getElementById("user-section");
+    const noUserSection = document.getElementById("no-user");
+
+    if (!savedUser || !savedUser.email) {
+      noUserSection.classList.remove("hidden");
+    } else {
+      document.getElementById("user-name").textContent = savedUser.name;
+      document.getElementById("user-username").textContent = "Username: " + savedUser.username;
+      document.getElementById("user-photo").src = savedUser.image || "https://i.ibb.co/2Yk3M8t/user.png";
+      userSection.classList.remove("hidden");
+    }
+
+    // Login form
+    document.getElementById("login-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const password = document.getElementById("password").value;
+      try {
+        const res = await fetch("https://victor-cheap-data-backend.onrender.com/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: savedUser.email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem("token", data.token);
+          window.location.href = "dashboard.html";
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch (err) {
+        alert("❌ Server error");
+      }
+    });
+
+    // Simulate fingerprint login
+    function fingerprintLogin() {
+      if (!savedUser || !savedUser.email) {
+        alert("No user saved. Please login manually.");
+        return;
+      }
+
+      alert("✅ Fingerprint matched. Logging you in...");
+
+      fetch("https://victor-cheap-data-backend.onrender.com/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: savedUser.email, password: "fingerprint-verified" }) // placeholder password
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          window.location.href = "dashboard.html";
+        } else {
+          alert(data.message || "Fingerprint login failed");
+        }
+      })
+      .catch(() => {
+        alert("❌ Fingerprint login failed");
+      });
+    }
+
+    // Switch account
+    function logoutUser() {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      window.location.reload();
+    }
+  </script>
+
+</body>
+</html>

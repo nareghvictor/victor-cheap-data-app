@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KYC Verification - Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+
+  <h2 class="text-xl font-bold mb-4 text-center">🛡️ KYC Verification</h2>
+
+  <form id="kycForm" class="space-y-4 max-w-md mx-auto">
+    <!-- ID Type Dropdown -->
+    <div>
+      <label for="idType" class="block mb-1">Select ID Type</label>
+      <select id="idType" name="idType" class="w-full p-2 rounded bg-gray-800 border border-gray-600">
+        <option value="">-- Choose ID Type --</option>
+        <option value="NIN">National Identity Number (NIN)</option>
+        <option value="Driver's License">Driver's License</option>
+        <option value="International Passport">International Passport</option>
+        <option value="Voter's Card">Voter's Card</option>
+        <option value="PVC">Permanent Voter Card (PVC)</option>
+        <option value="National ID">National ID</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <!-- ID Number -->
+    <div>
+      <label for="idNumber" class="block mb-1">ID Number</label>
+      <input type="text" id="idNumber" name="idNumber" required class="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+    </div>
+
+    <!-- BVN -->
+    <div>
+      <label for="bvn" class="block mb-1">Bank Verification Number (BVN)</label>
+      <input type="text" id="bvn" name="bvn" required class="w-full p-2 rounded bg-gray-800 border border-gray-600" />
+    </div>
+
+    <button type="submit" class="w-full bg-cyan-500 text-white font-semibold py-2 rounded">Submit KYC</button>
+  </form>
+
+  <!-- Script to handle form -->
+  <!-- ... (rest of head remains unchanged) -->
+
+<script>
+  document.getElementById('kycForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const idType = document.getElementById("idType").value;
+    const idNumber = document.getElementById("idNumber").value;
+    const bvn = document.getElementById("bvn").value;
+
+    if (!token) {
+      alert("❌ You must be logged in.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const res = await fetch("https://victor-cheap-data-backend.onrender.com/api/user/kyc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ idType, idNumber, bvn })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("✅ KYC submitted successfully");
+        window.location.href = "dashboard.html";
+      } else {
+        alert(data.message || "❌ KYC submission failed");
+      }
+    } catch (error) {
+      alert("❌ Server error. Please try again.");
+    }
+  });
+</script>
+
+</body>
+</html>

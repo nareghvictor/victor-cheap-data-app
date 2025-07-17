@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Up Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-green-100 to-blue-100 min-h-screen p-6">
+  <div class="max-w-md mx-auto bg-white rounded shadow p-6">
+    <h2 class="text-xl font-bold mb-4 text-center text-blue-700">💰 Top Up Wallet</h2>
+    
+    <form id="topup-form" class="space-y-4">
+      <input type="number" id="amount" placeholder="Enter amount" class="w-full border rounded p-2" required />
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Top Up</button>
+    </form>
+
+    <div id="message" class="mt-4 text-center text-sm"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('topup-form');
+    const token = localStorage.getItem('token');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const amount = document.getElementById('amount').value;
+
+      const res = await fetch('https://victor-cheap-data-backend.onrender.com/api/transactions/topup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ amount })
+      });
+
+      const data = await res.json();
+      const message = document.getElementById('message');
+      if (res.ok) {
+        message.textContent = '✅ Top up successful';
+        message.classList.add('text-green-700');
+      } else {
+        message.textContent = data.error || '❌ Failed to top up';
+        message.classList.add('text-red-700');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#0ea5e9",
+            dark: "#111827",
+            light: "#f1f5f9"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="flex bg-light text-gray-800 min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-xl p-4 flex flex-col">
+    <!-- Profile -->
+    <div class="flex items-center space-x-4 mb-6">
+      <img id="user-pic" src="default-avatar.png" alt="Profile" class="w-12 h-12 rounded-full object-cover">
+      <div>
+        <p id="user-name" class="font-bold text-gray-800">User Name</p>
+        <input type="file" id="upload-pic" class="hidden" accept="image/*">
+        <button onclick="document.getElementById('upload-pic').click()" class="text-xs text-blue-500 underline">Change Photo</button>
+      </div>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="space-y-2 flex-1">
+      <a href="dashboard.html" class="block px-3 py-2 rounded hover:bg-gray-200">🏠 Dashboard</a>
+      <a href="airtime.html" class="block px-3 py-2 rounded hover:bg-gray-200">📱 Buy Airtime</a>
+      <a href="data.html" class="block px-3 py-2 rounded hover:bg-gray-200">📶 Buy Data</a>
+      <a href="electricity.html" class="block px-3 py-2 rounded hover:bg-gray-200">💡 Electricity</a>
+      <a href="cable.html" class="block px-3 py-2 rounded hover:bg-gray-200">📺 Cable TV</a>
+      <a href="recharge.html" class="block px-3 py-2 rounded hover:bg-gray-200">💳 Recharge Card</a>
+
+      <!-- Settings Dropdown -->
+      <div class="mt-4 border-t pt-3">
+        <p class="text-xs uppercase text-gray-500 mb-2">Settings</p>
+        <a href="history.html" class="block px-3 py-2 rounded hover:bg-gray-200">📜 Transaction History</a>
+        <a href="support.html" class="block px-3 py-2 rounded hover:bg-gray-200">🛠️ Support</a>
+        <button onclick="logout()" class="block w-full text-left px-3 py-2 rounded hover:bg-gray-200 text-red-600">🔓 Logout</button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6" id="main-content">
+    <!-- This is where each page content will be placed -->
+    <h1 class="text-2xl font-bold">Welcome to Victor Cheap Data</h1>
+  </main>
+
+  <script>
+    // Load user info
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    fetch("https://victor-cheap-data-backend.onrender.com/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(user => {
+      document.getElementById("user-name").innerText = user.name || "User";
+      if (user.profilePic) {
+        document.getElementById("user-pic").src = user.profilePic;
+      }
+    });
+
+    // Upload profile pic
+    document.getElementById("upload-pic").addEventListener("change", async function() {
+      const formData = new FormData();
+      formData.append("photo", this.files[0]);
+
+      await fetch("https://victor-cheap-data-backend.onrender.com/api/auth/upload-pic", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+
+      window.location.reload();
+    });
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

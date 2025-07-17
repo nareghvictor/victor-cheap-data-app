@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor Cheap Data - Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-white min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+    <!-- Logo -->
+    <div class="flex flex-col items-center mb-6">
+      <img src="https://i.ibb.co/39yrxJHk/file-000000001788624397c947d3af55d17b.png" class="w-14 h-14 rounded-full mb-2" alt="App Logo" />
+      <h1 class="text-2xl font-bold text-blue-900">Victor Cheap Data</h1>
+    </div>
+
+    <h2 class="text-xl font-semibold text-blue-800 mb-4">Create Account</h2>
+
+    <form id="signup-form" class="space-y-4">
+      <input type="text" id="name" placeholder="Full Name" required class="w-full px-4 py-2 border border-gray-300 rounded" />
+      <input type="text" id="username" placeholder="Username" required class="w-full px-4 py-2 border border-gray-300 rounded" />
+      <input type="email" id="email" placeholder="Email" required class="w-full px-4 py-2 border border-gray-300 rounded" />
+      <input type="password" id="password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-300 rounded" />
+      <input type="url" id="image" placeholder="Profile Image URL (optional)" class="w-full px-4 py-2 border border-gray-300 rounded" />
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition">
+        Sign Up
+      </button>
+    </form>
+
+    <p class="mt-4 text-sm">Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Login</a></p>
+  </div>
+
+  <!-- Script -->
+  <script>
+  document.getElementById("signup-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const image = document.getElementById("image").value || "";
+
+    try {
+      const res = await fetch("https://victor-cheap-data-backend.onrender.com/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, username, email, password, image }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // ✅ Signup successful
+        localStorage.setItem("user", JSON.stringify({ name, username, email, image }));
+        alert("Signup successful!");
+        window.location.href = "login.html";
+      } else {
+        if (data.error === "User already exists") {
+          // ✅ Save partial info and redirect to login
+          localStorage.setItem("user", JSON.stringify({ email }));
+          alert("User already exists. Please login.");
+          window.location.href = "login.html";
+        } else {
+          alert(data.error || "Signup failed");
+        }
+      }
+    } catch (err) {
+      alert("❌ Server error. Please try again later.");
+    }
+  });
+</script>
+
+</body>
+</html>

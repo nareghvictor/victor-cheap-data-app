@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>More Settings - Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <div class="p-4 text-xl font-bold">Account</div>
+
+  <!-- Profile Info -->
+  <div class="bg-gray-800 p-4 flex items-center gap-4">
+    <div class="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center text-2xl">👤</div>
+    <div>
+      <div class="font-bold text-lg" id="user-name">Loading...</div>
+      <div class="text-sm text-gray-400" id="user-username">@username</div>
+    </div>
+  </div>
+
+  <!-- Settings Options -->
+  <div class="flex-1 overflow-y-auto px-4">
+    <ul class="divide-y divide-gray-700">
+
+      <li class="py-4 flex justify-between items-center">
+        <a href="info.html" class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">👤</span>
+          Information
+        </a>
+        <span>➡️</span>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <a href="qr.html" class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">📷</span>
+          QR Code
+        </a>
+        <span>➡️</span>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <a href="kyc.html" class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">🛂</span>
+          KYC Verification
+        </a>
+        <span>➡️</span>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <a href="pin.html" class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">🔑</span>
+          Transaction Pin
+        </a>
+        <span>➡️</span>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <a href="password.html" class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">🔒</span>
+          Password
+        </a>
+        <span>➡️</span>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <span class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">🛒</span>
+          Seller Panel
+        </span>
+        <label class="inline-flex relative items-center cursor-pointer">
+          <input type="checkbox" value="" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500"></div>
+        </label>
+      </li>
+
+      <li class="py-4 flex justify-between items-center">
+        <span class="flex items-center gap-3">
+          <span class="bg-teal-500 p-2 rounded-full">🔐</span>
+          Auto Lock
+        </span>
+        <label class="inline-flex relative items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500"></div>
+        </label>
+      </li>
+
+    </ul>
+  </div>
+
+  <!-- Delete Button -->
+  <div class="px-4 py-6">
+    <button onclick="deleteAccount()" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">
+      Delete Account
+    </button>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="flex justify-around bg-gray-800 text-sm py-3 border-t border-gray-700">
+    <a href="dashboard.html" class="flex flex-col items-center text-teal-400">
+      <span>🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="activity.html" class="flex flex-col items-center text-gray-300">
+      <span>📋</span>
+      <span>Activity</span>
+    </a>
+    <a href="reward.html" class="flex flex-col items-center text-gray-300">
+      <span>🎁</span>
+      <span>Reward</span>
+    </a>
+    <a href="market.html" class="flex flex-col items-center text-gray-300">
+      <span>🛍️</span>
+      <span>Market</span>
+    </a>
+    <a href="more.html" class="flex flex-col items-center text-gray-300">
+      <span>⋯</span>
+      <span>More</span>
+    </a>
+  </nav>
+
+  <!-- Script -->
+  <script>
+    // Load name and username from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      document.getElementById("user-name").textContent = user.name || "User";
+      document.getElementById("user-username").textContent = "@" + (user.username || "username");
+    }
+
+    // Delete account function
+    async function deleteAccount() {
+      const token = localStorage.getItem("token");
+      if (!confirm("Are you sure you want to delete your account?")) return;
+
+      try {
+        const res = await fetch("https://victor-cheap-data-backend.onrender.com/api/auth/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          }
+        });
+
+        if (res.ok) {
+          alert("Account deleted");
+          localStorage.clear();
+          window.location.href = "signup.html";
+        } else {
+          const data = await res.json();
+          alert(data.message || "Failed to delete account");
+        }
+      } catch (err) {
+        alert("Server error. Try again later.");
+      }
+    }
+  </script>
+
+</body>
+</html>

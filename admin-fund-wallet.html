@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Fund Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-green-100 to-blue-100 min-h-screen p-6 text-gray-900">
+  <div class="max-w-xl mx-auto bg-white rounded shadow p-6">
+    <h2 class="text-2xl font-bold mb-4 text-blue-700">💰 Fund a User's Wallet</h2>
+
+    <label class="block mb-2 text-sm font-medium">Select User:</label>
+    <select id="userSelect" class="w-full mb-4 p-2 border rounded">
+      <option value="">Loading users...</option>
+    </select>
+
+    <label class="block mb-2 text-sm font-medium">Amount to Add (₦):</label>
+    <input type="number" id="amountInput" class="w-full mb-4 p-2 border rounded" placeholder="Enter amount" />
+
+    <button id="fundBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">
+      ➕ Fund Wallet
+    </button>
+
+    <p id="message" class="mt-4 text-center text-sm"></p>
+
+    <div class="text-right mt-6">
+      <a href="admin-dashboard.html" class="text-blue-600 underline">⬅ Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const userSelect = document.getElementById("userSelect");
+    const fundBtn = document.getElementById("fundBtn");
+    const message = document.getElementById("message");
+
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    // Load users
+    fetch('https://victor-cheap-data-backend.onrender.com/api/admin/users')
+      .then(res => res.json())
+      .then(users => {
+        userSelect.innerHTML = '<option value="">Select a user</option>';
+        users.forEach(user => {
+          const option = document.createElement("option");
+          option.value = user._id;
+          option.textContent = `${user.fullName} (${user.email}) - ₦${user.wallet}`;
+          userSelect.appendChild(option);
+        });
+      })
+      .catch(() => {
+        userSelect.innerHTML = '<option value="">Failed to load users</option>';
+      });
+
+    // Fund wallet
+    fundBtn.addEventListener("click", () => {
+      const userId = userSelect.value;
+      const amount = parseFloat(document.getElementById("amountInput").value);
+
+      if (!userId || isNaN(amount) || amount <= 0) {
+        message.textContent = "❌ Please select a user and enter a valid amount.";
+        message.className = "text-red-600 text-center";
+        return;
+      }
+
+      fetch('https://victor-cheap-data-backend.onrender.com/api/admin/fund-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, amount })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            message.textContent = "❌ " + data.error;
+            message.className = "text-red-600 text-center";
+          } else {
+            message.textContent = `✅ ${data.message}. New Wallet: ₦${data.wallet}`;
+            message.className = "text-green-700 text-center font-medium";
+          }
+        })
+        .catch(() => {
+          message.textContent = "❌ Failed to process request.";
+          message.className = "text-red-600 text-center";
+        });
+    });
+  </script>
+</body>
+</html>

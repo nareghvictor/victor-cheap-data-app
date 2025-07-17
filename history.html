@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor Cheap Data - Transaction History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6 text-gray-800">
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold text-blue-700 mb-4">📄 Transaction History</h2>
+    <table class="w-full table-auto border-collapse text-sm">
+      <thead>
+        <tr class="bg-blue-100 text-left">
+          <th class="p-3">Date</th>
+          <th class="p-3">Type</th>
+          <th class="p-3">Amount (₦)</th>
+          <th class="p-3">Status</th>
+        </tr>
+      </thead>
+      <tbody id="transaction-table" class="text-gray-700">
+        <!-- Transactions will load here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    fetch("https://victor-cheap-data-backend.onrender.com/api/transactions", {
+      headers: { Authorization: "Bearer " + token }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("transaction-table");
+      if (Array.isArray(data)) {
+        table.innerHTML = data.map(txn => `
+          <tr class="border-t">
+            <td class="p-3">${new Date(txn.date).toLocaleDateString()}</td>
+            <td class="p-3">${txn.type}</td>
+            <td class="p-3">₦${txn.amount.toFixed(2)}</td>
+            <td class="p-3">${txn.status}</td>
+          </tr>
+        `).join("");
+      } else {
+        table.innerHTML = '<tr><td colspan="4" class="p-4 text-red-500">Error loading transactions</td></tr>';
+      }
+    });
+  </script>
+</body>
+</html>

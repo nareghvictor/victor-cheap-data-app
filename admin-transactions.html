@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Transactions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-tr from-yellow-100 to-purple-100 min-h-screen p-6 text-gray-800">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-purple-800">📦 All Transactions</h1>
+      <a href="admin-dashboard.html" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">⬅ Back to Dashboard</a>
+    </div>
+
+    <div class="bg-white rounded shadow overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-purple-100">
+          <tr>
+            <th class="py-3 px-4 text-left">User</th>
+            <th class="py-3 px-4 text-left">Type</th>
+            <th class="py-3 px-4 text-left">Amount (₦)</th>
+            <th class="py-3 px-4 text-left">Status</th>
+            <th class="py-3 px-4 text-left">Date</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-table" class="text-gray-700">
+          <!-- Data will load here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    fetch("https://victor-cheap-data-backend.onrender.com/api/admin/transactions")
+      .then(res => res.json())
+      .then(transactions => {
+        const table = document.getElementById("transactions-table");
+        transactions.forEach(txn => {
+          const row = `
+            <tr class="border-t">
+              <td class="py-2 px-4">${txn.user?.fullName || 'N/A'}<br/><small>${txn.user?.email || ''}</small></td>
+              <td class="py-2 px-4">${txn.type}</td>
+              <td class="py-2 px-4">₦${txn.amount.toFixed(2)}</td>
+              <td class="py-2 px-4">${txn.status}</td>
+              <td class="py-2 px-4">${new Date(txn.date).toLocaleString()}</td>
+            </tr>
+          `;
+          table.innerHTML += row;
+        });
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        document.getElementById("transactions-table").innerHTML = '<tr><td class="p-4" colspan="5">Failed to load transactions</td></tr>';
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Victor Cheap Data - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen pb-24">
+
+  <!-- Header -->
+  <div class="px-4 pt-6 flex items-center justify-between">
+    <div>
+      <p class="text-sm text-gray-400">Welcome</p>
+      <div class="flex items-center gap-2">
+        <h2 id="user-name" class="text-lg font-bold">User</h2>
+        <p id="kyc-status" class="text-sm font-semibold text-yellow-400"></p>
+      </div>
+    </div>
+    <div class="relative">
+      <button onclick="toggleMore()" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+        <span class="text-white">⋯</span>
+      </button>
+      <div id="moreMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
+        <a href="fund-wallet.html" class="block px-4 py-2 hover:bg-gray-100">💰 Fund Wallet</a>
+        <a href="send-money.html" class="block px-4 py-2 hover:bg-gray-100">💸 Send Money</a>
+        <a href="qr.html" class="block px-4 py-2 hover:bg-gray-100">🔳 My QR</a>
+        <a href="kyc.html" class="block px-4 py-2 hover:bg-gray-100">🛡️ KYC Verification</a>
+        <a href="info.html" class="block px-4 py-2 hover:bg-gray-100">👤 View Info</a>
+      </div>
+    </div>
+  </div>
+<!-- KYC Reminder Banner -->
+<div id="kyc-banner" class="mx-4 mt-3 p-3 bg-yellow-100 text-yellow-800 rounded hidden">
+  <p class="text-sm">
+    ⚠️ Your KYC is <span id="kyc-banner-status">pending</span>. 
+    <a href="kyc.html" class="text-blue-700 font-semibold underline">Complete Verification</a> to unlock full features.
+  </p>
+</div>
+
+  <!-- Wallet Card -->
+  <div class="m-4 p-4 bg-cyan-500 rounded-2xl shadow-md text-white">
+    <div class="flex justify-between items-start mb-3">
+      <div>
+        <p class="text-sm">Wallet</p>
+        <h3 class="text-lg font-bold">NGN Wallet</h3>
+      </div>
+      <div class="flex gap-2">
+        <a href="fund-wallet.html" class="bg-white text-black px-3 py-1 text-sm rounded-full">Fund Wallet</a>
+      </div>
+    </div>
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-sm">Your Balance</p>
+        <h2 class="text-2xl font-bold flex items-center">
+          <span id="wallet-balance">₦0.00</span>
+          <button id="toggle-eye" onclick="toggleBalance()" class="ml-2">👁️</button>
+        </h2>
+      </div>
+      <div class="flex flex-col items-end gap-2">
+        <a href="send-money.html" class="bg-black text-white text-sm px-3 py-1 rounded-full">Send Money</a>
+        <button class="bg-red-500 text-white text-sm px-3 py-1 rounded-full">Earn Money</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Service -->
+  <div class="px-4">
+    <h3 class="text-sm font-semibold mb-2">Quick Service</h3>
+    <div class="grid grid-cols-2 gap-3">
+      <a href="data.html" class="bg-gray-800 p-3 rounded flex items-center gap-2">📡 <span class="text-sm font-semibold">Buy Data</span></a>
+      <a href="airtime.html" class="bg-gray-800 p-3 rounded flex items-center gap-2">📞 <span class="text-sm font-semibold">Buy Airtime</span></a>
+      <a href="cable.html" class="bg-gray-800 p-3 rounded flex items-center gap-2">📺 <span class="text-sm font-semibold">Cable</span></a>
+      <a href="electricity.html" class="bg-gray-800 p-3 rounded flex items-center gap-2">💡 <span class="text-sm font-semibold">Electricity</span></a>
+    </div>
+  </div>
+
+  <!-- Quick Shopping -->
+  <div class="px-4 mt-6">
+    <h3 class="text-sm font-semibold mb-2">Quick Shopping</h3>
+    <div class="grid grid-cols-2 gap-2 text-sm text-center">
+      <a href="agriculture.html" class="bg-gray-800 p-3 rounded">🌾 Agriculture</a>
+      <a href="art.html" class="bg-gray-800 p-3 rounded">🎭 Art & Entertainment</a>
+      <a href="automobiles.html" class="bg-gray-800 p-3 rounded">🚗 Automobiles</a>
+      <a href="construction.html" class="bg-gray-800 p-3 rounded">🏗 Construction</a>
+      <a href="education.html" class="bg-gray-800 p-3 rounded">📚 Education</a>
+      <a href="fashion.html" class="bg-gray-800 p-3 rounded">👗 Fashion</a>
+    </div>
+  </div>
+
+  <!-- Live Support -->
+  <div class="px-4 mt-6">
+    <a href="support.html" class="block bg-cyan-500 text-white py-3 rounded-full text-center font-semibold">💬 Live Support</a>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bg-gray-800 p-3 flex justify-between fixed bottom-0 w-full max-w-md mx-auto rounded-t-2xl">
+    <a href="#" class="flex flex-col items-center text-cyan-400">
+      <span>🏠</span><span class="text-xs">Home</span>
+    </a>
+    <a href="history.html" class="flex flex-col items-center text-white">
+      <span>📑</span><span class="text-xs">Activity</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-white">
+      <span>🎁</span><span class="text-xs">Reward</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-white">
+      <span>🛒</span><span class="text-xs">Market</span>
+    </a>
+    <a href="#" onclick="toggleMoreModal()" class="flex flex-col items-center text-white">
+      <span>⋯</span><span class="text-xs">More</span>
+    </a>
+  </nav>
+
+  <!-- More Modal -->
+  <div id="moreModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md relative">
+      <button onclick="toggleMoreModal()" class="absolute top-2 right-3 text-gray-500 hover:text-black text-lg">✕</button>
+      <h2 class="text-xl font-bold mb-4 text-gray-800">More Functions</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <a href="info.html" class="bg-gray-100 hover:bg-gray-200 p-3 rounded text-center text-sm font-medium">🧾 My Info</a>
+        <a href="kyc.html" class="bg-gray-100 hover:bg-gray-200 p-3 rounded text-center text-sm font-medium">🔐 KYC</a>
+        <a href="qr.html" class="bg-gray-100 hover:bg-gray-200 p-3 rounded text-center text-sm font-medium">🔍 QR</a>
+        <a href="send-money.html" class="bg-gray-100 hover:bg-gray-200 p-3 rounded text-center text-sm font-medium">💸 Send</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    let isVisible = true;
+    let actualBalance = 0;
+
+   fetch("https://victor-cheap-data-backend.onrender.com/api/auth/profile", {
+  headers: {
+    Authorization: "Bearer " + localStorage.getItem("token")
+  }
+})
+.then(res => res.json())
+.then(data => {
+  if (data.wallet !== undefined) {
+    actualBalance = data.wallet.toFixed(2);
+    document.getElementById("wallet-balance").textContent = `₦${actualBalance}`;
+  }
+
+  if (data.name) {
+    document.getElementById("user-name").textContent = data.name;
+  }
+
+  const kycStatus = data.kyc?.status?.toUpperCase() || "NOT SUBMITTED";
+  const statusEl = document.getElementById("kyc-status");
+
+  if (kycStatus === "VERIFIED") {
+    statusEl.textContent = "🟢 KYC: Verified";
+    statusEl.className = "text-sm font-semibold text-green-400";
+  } else if (kycStatus === "PENDING") {
+    statusEl.textContent = "🟡 KYC: Pending";
+    statusEl.className = "text-sm font-semibold text-yellow-400";
+    document.getElementById("kyc-banner").classList.remove("hidden");
+    document.getElementById("kyc-banner-status").textContent = "pending";
+  } else {
+    statusEl.textContent = "🔴 KYC: Not Submitted";
+    statusEl.className = "text-sm font-semibold text-red-400";
+    document.getElementById("kyc-banner").classList.remove("hidden");
+    document.getElementById("kyc-banner-status").textContent = "not submitted";
+  }
+});
+
+    function toggleBalance() {
+      isVisible = !isVisible;
+      document.getElementById("wallet-balance").textContent = isVisible ? `₦${actualBalance}` : "••••••••";
+      document.getElementById("toggle-eye").textContent = isVisible ? "👁️" : "🙈";
+    }
+
+    function toggleMore() {
+      document.getElementById("moreMenu").classList.toggle("hidden");
+    }
+
+    function toggleMoreModal() {
+      document.getElementById("moreModal").classList.toggle("hidden");
+    }
+  </script>
+</body>
+</html>
