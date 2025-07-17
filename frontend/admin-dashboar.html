@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-100 via-sky-200 to-blue-300 text-gray-900">
+  <div class="p-6 max-w-7xl mx-auto">
+    <header class="flex justify-between items-center mb-8">
+     <div class="flex items-center space-x-3">
+  <img src="https://i.ibb.co/39yrxJHk/file-000000001788624397c947d3af55d17b.png" alt="Victor Cheap Data" class="w-14 h-14 rounded-full shadow-md" />
+  <h1 class="text-2xl font-bold text-blue-700">Victor Cheap Data</h1>
+</div>
+
+
+      <h1 class="text-3xl font-bold text-blue-900">📊 Admin Dashboard</h1>
+      <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+        🔓 Logout
+      </button>
+    </header>
+<a href="admin-users.html" class="text-blue-700 underline">View Users</a>
+<a href="admin-transactions.html" class="text-purple-700 underline">view Transactions</a>
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <h2 class="text-xl font-semibold mb-2">👥 Total Users</h2>
+        <p id="total-users" class="text-3xl font-bold text-blue-700">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <h2 class="text-xl font-semibold mb-2">💰 Total Wallet Balance</h2>
+        <p id="total-wallet" class="text-3xl font-bold text-green-700">₦0.00</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <h2 class="text-xl font-semibold mb-2">💳 Total Transactions</h2>
+        <p id="total-transactions" class="text-3xl font-bold text-purple-700">0</p>
+      </div>
+    </div>
+<a href="admin-fund-wallet.html" class="text-green-700 underline">Fund User Wallet</a>
+
+    <!-- More sections will go here -->
+    <div class="bg-white p-6 rounded-lg shadow text-center text-gray-600">
+      More admin features coming soon...
+    </div>
+  </div>
+
+  <script>
+    // Protect route
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "admin-login.html";
+    }
+
+    // Fetch admin data
+    fetch("https://victor-cheap-data-backend.onrender.com/api/admin/stats")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("total-users").innerText = data.totalUsers || 0;
+        document.getElementById("total-wallet").innerText = `₦${data.totalWallet || 0}`;
+        document.getElementById("total-transactions").innerText = data.totalTransactions || 0;
+      })
+      .catch(err => console.log("Admin stats error:", err));
+
+    function logout() {
+      localStorage.removeItem("isAdmin");
+      window.location.href = "admin-login.html";
+    }
+  </script>
+</body>
+</html>

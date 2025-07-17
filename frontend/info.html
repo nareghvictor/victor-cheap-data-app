@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Info - Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-4">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-bold text-blue-900">👤 My Info</h1>
+    <a href="dashboard.html" class="text-blue-600 hover:underline text-sm">← Back to Dashboard</a>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <div class="flex flex-col items-center mb-6">
+      <img id="userImage" src="" alt="Profile Picture" class="w-24 h-24 rounded-full border mb-3 object-cover" />
+      <h2 id="userName" class="text-lg font-bold text-center"></h2>
+      <p id="userUsername" class="text-sm text-gray-600"></p>
+    </div>
+
+    <div class="space-y-3 text-sm">
+      <div><span class="font-semibold">📧 Email:</span> <span id="userEmail"></span></div>
+      <div><span class="font-semibold">💰 Wallet:</span> ₦<span id="userWallet">0.00</span></div>
+      <div><span class="font-semibold">📅 Joined:</span> <span id="userDate"></span></div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Edit Profile</button>
+    </div>
+  </div>
+
+  <!-- Script to Fetch User Info -->
+  <script>
+    const token = localStorage.getItem('token');
+
+    fetch("https://victor-cheap-data-backend.onrender.com/api/auth/me", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    })
+    .then(res => res.json())
+    .then(user => {
+      document.getElementById("userImage").src = user.image || "https://via.placeholder.com/100";
+      document.getElementById("userName").textContent = user.name || "No Name";
+      document.getElementById("userUsername").textContent = user.username ? `@${user.username}` : "";
+      document.getElementById("userEmail").textContent = user.email;
+      document.getElementById("userWallet").textContent = Number(user.wallet).toFixed(2);
+      document.getElementById("userDate").textContent = new Date(user.createdAt).toLocaleDateString();
+    })
+    .catch(err => {
+      console.error("Failed to load user info", err);
+      alert("⚠️ Unable to fetch profile.");
+    });
+  </script>
+
+</body>
+</html>

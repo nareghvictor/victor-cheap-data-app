@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Send Money - Victor Cheap Data</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+    <h1 class="text-xl font-bold text-center text-gray-800 mb-4">💸 Send Money</h1>
+
+    <form id="sendMoneyForm" class="space-y-4">
+      <!-- Bank Dropdown -->
+      <div>
+        <label for="bank" class="block text-sm font-medium text-gray-700">Select Bank</label>
+        <select id="bank" name="bank" class="w-full px-4 py-2 border border-gray-300 rounded" required>
+          <option value="">-- Select Bank --</option>
+          <option value="Access Bank">Access Bank</option>
+          <option value="Citibank">Citibank</option>
+          <option value="Ecobank">Ecobank</option>
+          <option value="Fidelity Bank">Fidelity Bank</option>
+          <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+          <option value="First City Monument Bank (FCMB)">First City Monument Bank (FCMB)</option>
+          <option value="Globus Bank">Globus Bank</option>
+          <option value="Guaranty Trust Bank (GTBank)">Guaranty Trust Bank (GTBank)</option>
+          <option value="Heritage Bank">Heritage Bank</option>
+          <option value="Keystone Bank">Keystone Bank</option>
+          <option value="Polaris Bank">Polaris Bank</option>
+          <option value="Providus Bank">Providus Bank</option>
+          <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+          <option value="Standard Chartered Bank">Standard Chartered Bank</option>
+          <option value="Sterling Bank">Sterling Bank</option>
+          <option value="Suntrust Bank">Suntrust Bank</option>
+          <option value="Union Bank of Nigeria">Union Bank of Nigeria</option>
+          <option value="United Bank for Africa (UBA)">United Bank for Africa (UBA)</option>
+          <option value="Unity Bank">Unity Bank</option>
+          <option value="Wema Bank">Wema Bank</option>
+          <option value="Zenith Bank">Zenith Bank</option>
+          <option value="Kuda Microfinance Bank">Kuda Microfinance Bank</option>
+          <option value="Moniepoint Microfinance Bank">Moniepoint Microfinance Bank</option>
+          <option value="Opay Microfinance Bank">Opay Microfinance Bank</option>
+          <option value="Palmpay MFB">Palmpay MFB</option>
+          <option value="Rubies MFB">Rubies MFB</option>
+          <option value="Sparkle Microfinance Bank">Sparkle Microfinance Bank</option>
+          <option value="VFD Microfinance Bank">VFD Microfinance Bank</option>
+        </select>
+      </div>
+
+      <!-- Account Number -->
+      <div>
+        <label for="account" class="block text-sm font-medium text-gray-700">Account Number</label>
+        <input type="text" id="account" name="account" placeholder="1234567890" required
+               class="w-full px-4 py-2 border border-gray-300 rounded" />
+      </div>
+
+      <!-- Amount -->
+      <div>
+        <label for="amount" class="block text-sm font-medium text-gray-700">Amount (₦)</label>
+        <input type="number" id="amount" name="amount" placeholder="1000" required
+               class="w-full px-4 py-2 border border-gray-300 rounded" />
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        Send Money
+      </button>
+    </form>
+
+    <!-- Message Box -->
+    <p id="message" class="text-center mt-4 text-sm text-gray-700 font-medium"></p>
+  </div>
+
+  <script>
+    document.getElementById("sendMoneyForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const bank = document.getElementById("bank").value;
+      const account = document.getElementById("account").value;
+      const amount = document.getElementById("amount").value;
+      const messageEl = document.getElementById("message");
+
+      try {
+        const res = await fetch("https://victor-cheap-data-backend.onrender.com/api/transactions/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token")
+          },
+          body: JSON.stringify({ bank, account, amount })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          messageEl.textContent = "✅ " + data.message;
+          messageEl.classList.add("text-green-600");
+        } else {
+          messageEl.textContent = "❌ " + (data.error || "Transaction failed");
+          messageEl.classList.add("text-red-600");
+        }
+      } catch (err) {
+        messageEl.textContent = "❌ Network or server error!";
+        messageEl.classList.add("text-red-600");
+      }
+    });
+  </script>
+
+</body>
+</html>

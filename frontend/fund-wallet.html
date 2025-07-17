@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fund Wallet - Victor Cheap Data</title>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen px-6 pt-10">
+  <h2 class="text-xl font-bold mb-4">💳 Fund Wallet</h2>
+
+  <label class="block mb-2 text-sm">Enter amount (NGN)</label>
+  <input type="number" id="amount" class="w-full p-2 rounded text-black mb-4" placeholder="e.g. 2000" />
+
+  <button onclick="payWithFlutterwave()" class="bg-cyan-500 w-full py-3 rounded font-bold text-white">
+    Pay with Flutterwave
+  </button>
+
+  <script>
+    function payWithFlutterwave() {
+      const amount = document.getElementById("amount").value;
+      const token = localStorage.getItem("token");
+      if (!amount || amount <= 0) return alert("Enter a valid amount");
+
+      fetch("https://victor-cheap-data-backend.onrender.com/api/auth/profile", {
+        headers: { Authorization: "Bearer " + token }
+      })
+      .then(res => res.json())
+      .then(user => {
+        FlutterwaveCheckout({
+          public_key: "FLWPUBK_TEST-d55d9d4dbfd54b53ac64894ebdb6dbee-X",
+          tx_ref: "Victor_" + Date.now(),
+          amount: parseFloat(amount),
+          currency: "NGN",
+          payment_options: "card, banktransfer",
+          customer: {
+            email: user.email,
+            name: user.name,
+          },
+          callback: function (response) {
+            if (response.status === "successful") {
+              // 🔁 Send to backend to credit wallet
+              fetch("https://victor-cheap-data-backend.onrender.com/api/transaction/fund", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + token
+                },
+                body: JSON.stringify({
+                  method: "flutterwave",
+                  amount: amount
+                })
+              })
+              .then(res => res.json())
+              .then(data => {
+                alert("✅ Wallet funded successfully!");
+                window.location.href = "dashboard.html";
+              });
+            } else {
+              alert("❌ Payment not completed.");
+            }
+          },
+          customizations: {
+            title: "Victor Cheap Data",
+            description: "Fund Wallet",
+            logo: "https://your-logo-url.com/logo.png", // optional
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
