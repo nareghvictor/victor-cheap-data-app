@@ -29,7 +29,7 @@
       .then(res => res.json())
       .then(user => {
         FlutterwaveCheckout({
-          public_key: "FLWPUBK_2022141303f1d426715b208cf8cf8438-x";
+          public_key: "FLWPUBK-2022141303f1d427426715b208cf8438-X",
           tx_ref: "Victor_" + Date.now(),
           amount: parseFloat(amount),
           currency: "NGN",
@@ -40,7 +40,7 @@
           },
           callback: function (response) {
             if (response.status === "successful") {
-              // 🔁 Send to backend to credit wallet
+              // Send to backend to credit wallet
               fetch("https://victor-cheap-data-backend.onrender.com/api/transaction/fund", {
                 method: "POST",
                 headers: {
@@ -64,7 +64,7 @@
           customizations: {
             title: "Victor Cheap Data",
             description: "Fund Wallet",
-            logo: "https://your-logo-url.com/logo.png", // optional
+            logo: "https://your-logo-url.com/logo.png"
           }
         });
       });
