@@ -29,7 +29,7 @@
       .then(res => res.json())
       .then(user => {
         FlutterwaveCheckout({
-          public_key: "FLWPUBK-2022141303f1d427426715b208cf8438-X",
+          public_key: "9QpQqYQ1Cdcxzed6U39TjjDV10Tk0Qby", // ✅ your correct public key
           tx_ref: "Victor_" + Date.now(),
           amount: parseFloat(amount),
           currency: "NGN",
@@ -40,7 +40,6 @@
           },
           callback: function (response) {
             if (response.status === "successful") {
-              // Send to backend to credit wallet
               fetch("https://victor-cheap-data-backend.onrender.com/api/transaction/fund", {
                 method: "POST",
                 headers: {
