@@ -18,44 +18,63 @@
   </button>
 
   <script>
-    function payWithFlutterwave() {
+    async function payWithFlutterwave() {
       const amount = document.getElementById("amount").value;
       const token = localStorage.getItem("token");
-      if (!amount || amount <= 0) return alert("Enter a valid amount");
 
-      fetch("https://victor-cheap-data-backend.onrender.com/api/auth/profile", {
-        headers: { Authorization: "Bearer " + token }
-      })
-      .then(res => res.json())
-      .then(user => {
+      if (!amount || amount <= 0) {
+        return alert("Enter a valid amount");
+      }
+
+      try {
+        // Step 1: Get user details
+        const profileRes = await fetch("https://victor-cheap-data-backend.onrender.com/api/auth/profile", {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
+
+        const user = await profileRes.json();
+
+        // Step 2: Open Flutterwave Checkout
         FlutterwaveCheckout({
-          public_key: "9QpQqYQ1Cdcxzed6U39TjjDV10Tk0Qby", // ✅ your correct public key
+          public_key: "9QpQqYQ1Cdcxzed6U39TjjDV10Tk0Qby", // ✅ Public key
           tx_ref: "Victor_" + Date.now(),
           amount: parseFloat(amount),
           currency: "NGN",
           payment_options: "card, banktransfer",
           customer: {
-            email: user.email,
-            name: user.name,
+            email: user.email || "example@email.com",
+            name: user.name || "Victor User",
           },
-          callback: function (response) {
+          callback: async function (response) {
             if (response.status === "successful") {
-              fetch("https://victor-cheap-data-backend.onrender.com/api/transaction/fund", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + token
-                },
-                body: JSON.stringify({
-                  method: "flutterwave",
-                  amount: amount
-                })
-              })
-              .then(res => res.json())
-              .then(data => {
-                alert("✅ Wallet funded successfully!");
-                window.location.href = "dashboard.html";
-              });
+              // Step 3: Notify backend
+              try {
+                const confirmRes = await fetch("https://victor-cheap-data-backend.onrender.com/api/transaction/fund", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                  },
+                  body: JSON.stringify({
+                    method: "flutterwave",
+                    amount: amount
+                  })
+                });
+
+                const confirmData = await confirmRes.json();
+
+                if (confirmData.success) {
+                  alert("✅ Wallet funded successfully!");
+                  window.location.href = "dashboard.html";
+                } else {
+                  alert("⚠️ Payment succeeded but wallet not funded: " + (confirmData.message || "Check backend logs."));
+                }
+              } catch (err) {
+                console.error("Error funding wallet:", err);
+                alert("❌ Payment succeeded but wallet funding failed.");
+              }
             } else {
               alert("❌ Payment not completed.");
             }
@@ -66,7 +85,11 @@
             logo: "https://your-logo-url.com/logo.png"
           }
         });
-      });
+
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        alert("❌ Failed to fetch user profile. Please login again.");
+      }
     }
   </script>
 </body>
